@@ -14,7 +14,7 @@ model = BayesianModel([('authors', 'source'), ('authors', 'class'),
 
 # Load the training data
 old_data = pd.read_csv(
-    '..\\EmbedingsAndData\\training.csv')
+    '..\\EmbedingsAndData\\training.csv', dtype=str)
 
 word_embeddings = np.load(
     '..\\EmbedingsAndData\\english_word_embeddings.npy', allow_pickle=True).item()

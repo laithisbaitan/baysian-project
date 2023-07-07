@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
+import networkx as nx
 import nltk
+from sklearn.metrics.pairwise import cosine_similarity
 from nltk.tokenize import sent_tokenize
 from nltk.corpus import stopwords
 # nltk.download('punkt') # one time execution
@@ -29,34 +31,30 @@ def my_function(value):
     # remove punctuations, numbers and special characters
     clean_sentences = pd.Series(sentences).str.replace("[^a-zA-Z]", " ")
 
-    # make alphabets lowercase
-    clean_sentences = [s.lower() for s in clean_sentences]
-
     # remove stopwords from the sentences
     clean_sentences = [remove_stopwords(r.split()) for r in clean_sentences]
 
-    sentence_vectors = []
-    for sentence in clean_sentences:
-        if len(sentence) != 0:
-            v = sum([word_embeddings.get(word, np.zeros((300,)))
-                    for word in sentence]) / (len(sentence) + 0.001)
-        else:
-            v = np.zeros((300,))
-        sentence_vectors.append(v)
+    # sentence_vectors = []
+    # for sentence in clean_sentences:
+    #     if len(sentence) != 0:
+    #         v = sum([word_embeddings.get(word, np.zeros((300,)))
+    #                 for word in sentence]) / (len(sentence) + 0.001)
+    #     else:
+    #         v = np.zeros((300,))
+    #     sentence_vectors.append(v)
+    sentence_vectors = [sum([word_embeddings.get(word, np.zeros((300,))) for word in sentence]) / (
+        len(sentence) + 0.001) if len(sentence) != 0 else np.zeros((300,)) for sentence in clean_sentences]
 
     # print(sentence_vectors)
 
     # similarity matrix
     sim_mat = np.zeros([len(sentences), len(sentences)])
 
-    from sklearn.metrics.pairwise import cosine_similarity
     for i in range(len(sentences)):
         for j in range(len(sentences)):
             if i != j:
                 sim_mat[i][j] = cosine_similarity(sentence_vectors[i].reshape(1, 300),
                                                   sentence_vectors[j].reshape(1, 300))[0, 0]
-
-    import networkx as nx
 
     nx_graph = nx.from_numpy_array(sim_mat)
     scores = nx.pagerank(nx_graph)
@@ -64,10 +62,11 @@ def my_function(value):
     ranked_sentences = sorted(
         ((scores[i], s) for i, s in enumerate(sentences)), reverse=True)
     # Extract top 10 sentences as the summary
-    final_summary = ""
-    for i in range(1):
-        final_summary = ranked_sentences[i][1]
-        print(ranked_sentences[i][1])
+    # final_summary = ""
+    # for i in range(1):
+    #     final_summary = ranked_sentences[i][1]
+    #     print(ranked_sentences[i][1])
+    final_summary = ranked_sentences[0][1]  # Extract the top-ranked sentence
 
     return final_summary
 

@@ -11,7 +11,7 @@ model = BayesianModel([('authors', 'source'), ('authors', 'class'),
                        ('source', 'class'), ('title', 'class'), ('summary', 'class')])
 
 # Load the training data
-data = pd.read_csv('..\\EmbedingsAndData\\training.csv')
+data = pd.read_csv('..\\EmbedingsAndData\\training.csv', dtype=str)
 
 word_embeddings = np.load(
     '..\\EmbedingsAndData\\english_word_embeddings.npy', allow_pickle=True).item()
@@ -39,37 +39,51 @@ def convert_authors_to_vector(authors, word_embeddings, char_embeddings):
 # Replace the column names and vector conversion code with your specific implementation
 # Extract word vectors
 data['authors'] = data['authors'].apply(
-    convert_authors_to_vector, word_embeddings=word_embeddings, char_embeddings=char_embeddings)
+    lambda authors: convert_authors_to_vector(
+        authors, word_embeddings=word_embeddings, char_embeddings=char_embeddings)
+)
 data['title'] = data['title'].apply(
-    textToVector, word_embeddings=word_embeddings, char_embeddings=char_embeddings)
+    lambda title: textToVector(
+        title, word_embeddings=word_embeddings, char_embeddings=char_embeddings)
+)
 data['source'] = data['source'].apply(
-    textToVector, word_embeddings=word_embeddings, char_embeddings=char_embeddings)
+    lambda source: textToVector(
+        source, word_embeddings=word_embeddings, char_embeddings=char_embeddings)
+)
 data['summary'] = data['summary'].apply(
-    textToVector, word_embeddings=word_embeddings, char_embeddings=char_embeddings)
+    lambda summary: textToVector(
+        summary, word_embeddings=word_embeddings, char_embeddings=char_embeddings)
+)
+
 
 # Define a similarity threshold for evidence
 similarity_threshold = 0.7
 
 # /////////////////testdata
-data2 = pd.read_csv('..\\EmbedingsAndData\\evidance.csv')
+data2 = pd.read_csv('..\\EmbedingsAndData\\evidance.csv', dtype=str)
 
 # # Convert the evidence vectors
 evidence_author = data2['authors'].apply(
-    convert_authors_to_vector, word_embeddings=word_embeddings, char_embeddings=char_embeddings)
+    lambda authors: convert_authors_to_vector(
+        authors, word_embeddings=word_embeddings, char_embeddings=char_embeddings)
+).values[0]
 evidence_title = data2['title'].apply(
-    textToVector, word_embeddings=word_embeddings, char_embeddings=char_embeddings)
+    lambda title: textToVector(
+        title, word_embeddings=word_embeddings, char_embeddings=char_embeddings)
+).values[0]
 evidence_source = data2['source'].apply(
-    textToVector, word_embeddings=word_embeddings, char_embeddings=char_embeddings)
+    lambda source: textToVector(
+        source, word_embeddings=word_embeddings, char_embeddings=char_embeddings)
+).values[0]
 evidence_summary = data2['summary'].apply(
-    textToVector, word_embeddings=word_embeddings, char_embeddings=char_embeddings)
-evidence_author = evidence_author[0]
+    lambda summary: textToVector(
+        summary, word_embeddings=word_embeddings, char_embeddings=char_embeddings)
+).values[0]
+
 if evidence_author:
     evidence_author = evidence_author[0]
 else:
     evidence_author
-evidence_source = evidence_source[0]
-evidence_title = evidence_title[0]
-evidence_summary = evidence_summary[0]
 
 
 data['authors'] = data.apply(
@@ -77,7 +91,6 @@ data['authors'] = data.apply(
         author, evidence_author) >= similarity_threshold for author in row['authors']) else 'B',
     axis=1
 )
-
 data['source'] = data.apply(
     lambda row: 'A' if myCosine_similarity(
         row['source'], evidence_source) >= similarity_threshold else 'B',
