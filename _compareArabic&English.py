@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.decomposition import PCA
 from ToVector import textToVector
-from _ArabicGloveTest import Arabic_textToVector
+from _ArabicToVector import Arabic_textToVector
 from _CustomVectorSimilarity import myCosine_similarity
 
 print("READING Arabic GLOVE NOW....")

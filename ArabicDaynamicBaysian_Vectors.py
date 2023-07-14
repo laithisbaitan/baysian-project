@@ -3,7 +3,7 @@ from pgmpy.estimators import BayesianEstimator
 from pgmpy.inference import VariableElimination
 import pandas as pd
 import numpy as np
-from ToVector import textToVector
+from _ArabicToVector import textToVector
 from _CustomVectorSimilarity import myCosine_similarity
 
 # Define the structure of the Bayesian network
@@ -14,13 +14,13 @@ model = BayesianNetwork([('authors', 'source'), ('authors', 'class'),
 data = pd.read_csv('..\\EmbedingsAndData\\training.csv', dtype=str)
 
 word_embeddings = np.load(
-    '..\\EmbedingsAndData\\english_word_embeddings.npy', allow_pickle=True).item()
-char_embeddings = np.load(
-    '..\\EmbedingsAndData\\english_char_embeddings.npy', allow_pickle=True).item()
+    '..\\EmbedingsAndData\\arabic_word_embeddings.npy', allow_pickle=True).item()
+# char_embeddings = np.load(
+#     '..\\EmbedingsAndData\\english_char_embeddings.npy', allow_pickle=True).item()
 
 
 # make all authors into vectors
-def convert_authors_to_vector(authors, word_embeddings, char_embeddings):
+def convert_authors_to_vector(authors, word_embeddings):
     if isinstance(authors, str):
         authors = authors.split(',')  # Split authors by comma
         author_vectors = []
@@ -28,7 +28,7 @@ def convert_authors_to_vector(authors, word_embeddings, char_embeddings):
             if (author == ""):
                 continue
             author_vector = textToVector(
-                author.strip(), word_embeddings=word_embeddings, char_embeddings=char_embeddings)
+                author.strip(), word_embeddings=word_embeddings)
             author_vectors.append(author_vector)
         return author_vectors
     return []
@@ -40,19 +40,19 @@ def convert_authors_to_vector(authors, word_embeddings, char_embeddings):
 # Extract word vectors
 data['authors'] = data['authors'].apply(
     lambda authors: convert_authors_to_vector(
-        authors, word_embeddings=word_embeddings, char_embeddings=char_embeddings)
+        authors, word_embeddings=word_embeddings)
 )
 data['title'] = data['title'].apply(
     lambda title: textToVector(
-        title, word_embeddings=word_embeddings, char_embeddings=char_embeddings)
+        title, word_embeddings=word_embeddings)
 )
 data['source'] = data['source'].apply(
     lambda source: textToVector(
-        source, word_embeddings=word_embeddings, char_embeddings=char_embeddings)
+        source, word_embeddings=word_embeddings)
 )
 data['summary'] = data['summary'].apply(
     lambda summary: textToVector(
-        summary, word_embeddings=word_embeddings, char_embeddings=char_embeddings)
+        summary, word_embeddings=word_embeddings)
 )
 
 
@@ -65,19 +65,19 @@ data2 = pd.read_csv('..\\EmbedingsAndData\\evidance.csv', dtype=str)
 # # Convert the evidence vectors
 evidence_author = data2['authors'].apply(
     lambda authors: convert_authors_to_vector(
-        authors, word_embeddings=word_embeddings, char_embeddings=char_embeddings)
+        authors, word_embeddings=word_embeddings)
 ).values[0]
 evidence_title = data2['title'].apply(
     lambda title: textToVector(
-        title, word_embeddings=word_embeddings, char_embeddings=char_embeddings)
+        title, word_embeddings=word_embeddings)
 ).values[0]
 evidence_source = data2['source'].apply(
     lambda source: textToVector(
-        source, word_embeddings=word_embeddings, char_embeddings=char_embeddings)
+        source, word_embeddings=word_embeddings)
 ).values[0]
 evidence_summary = data2['summary'].apply(
     lambda summary: textToVector(
-        summary, word_embeddings=word_embeddings, char_embeddings=char_embeddings)
+        summary, word_embeddings=word_embeddings)
 ).values[0]
 
 if evidence_author:

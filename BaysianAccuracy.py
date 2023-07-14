@@ -1,4 +1,4 @@
-from pgmpy.models import BayesianModel
+from pgmpy.models import BayesianNetwork
 from pgmpy.estimators import BayesianEstimator
 from pgmpy.inference import VariableElimination
 import pandas as pd
@@ -9,8 +9,8 @@ from sklearn.model_selection import train_test_split
 from _CustomVectorSimilarity import myCosine_similarity
 
 # Define the structure of the Bayesian network
-model = BayesianModel([('authors', 'source'), ('authors', 'class'),
-                       ('source', 'class'), ('title', 'class'), ('summary', 'class')])
+model = BayesianNetwork([('authors', 'source'), ('authors', 'class'),
+                         ('source', 'class'), ('title', 'class'), ('summary', 'class')])
 
 # Load the training data
 old_data = pd.read_csv(

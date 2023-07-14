@@ -19,7 +19,8 @@ def textToVector(value, word_embeddings, char_embeddings):
     sentences = sent_tokenize(value)
 
     # remove punctuations, numbers and special characters
-    clean_sentences = pd.Series(sentences).str.replace("[^a-zA-Z]", " ")
+    clean_sentences = pd.Series(sentences).str.replace(
+        "[^a-zA-Z]", " ", regex=True)
 
     # make alphabets lowercase
     clean_sentences = [s.lower() for s in clean_sentences]
