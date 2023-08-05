@@ -24,7 +24,7 @@ def remove_stopwords(sentence):
 # Define your function to be applied to the column
 
 
-def my_function(value):
+def TextToSummery(value):
     # Modify the value as needed
     sentences = sent_tokenize(value)
 

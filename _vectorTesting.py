@@ -10,14 +10,17 @@ from _CustomVectorSimilarity import myCosine_similarity
 
 word_embeddings = np.load(
     '..\\EmbedingsAndData\\english_word_embeddings.npy', allow_pickle=True).item()
+char_embeddings = np.load(
+    '..\\EmbedingsAndData\\english_char_embeddings.npy', allow_pickle=True).item()
 
 
 # Example values
-p1 = "Wendy Gittleson"
-p2 = "Wendy Gittleson,Tony Elliott"
-
-p1Vec = textToVector(p1, word_embeddings)
-p2Vec = textToVector(p2, word_embeddings)
+p1 = "Elon Musk's Twitter rebranded as X. Here's why"
+p2 = "Elon Musk Dosen't rebranded twitter as X. Here's why"
 
 
-print(myCosine_similarity(p1Vec, p2Vec))
+p1Vec = textToVector(p1, word_embeddings, char_embeddings)
+p2Vec = textToVector(p2, word_embeddings, char_embeddings)
+
+
+print(round(myCosine_similarity(p1Vec, p2Vec), 2))

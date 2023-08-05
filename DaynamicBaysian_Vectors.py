@@ -169,3 +169,15 @@ query = inference.query(['class'], evidence={
                         'source': evidence_source, 'summary': evidence_summary}, joint=False)
 
 print(query['class'])
+
+# author
+query = inference.query(['class'], evidence={
+                        'authors': evidence_author}, joint=False)
+
+print(query['class'])
+
+# source
+query = inference.query(['class'], evidence={
+                        'source': evidence_source}, joint=False)
+
+print(query['class'])
